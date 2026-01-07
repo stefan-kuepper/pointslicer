@@ -111,7 +111,21 @@ impl ExtractionPipeline {
 
         // 4. Write output LAS/LAZ file
         if points_written > 0 {
-            let mut writer = PointCloudWriter::create_with_default(&self.output_path)?;
+            // Get header from the first tile to preserve point format and other settings
+            let first_tile = &tiles[0];
+            let first_reader = PointCloudReader::open(&first_tile.file_path)?;
+            let source_header = first_reader.header();
+
+            // Create a Builder from the source header to preserve format settings
+            let mut builder = las::Builder::from(source_header.clone());
+
+            // Update bounds to match the filtered points
+            builder.point_format = source_header.point_format().clone();
+
+            let output_header = builder.into_header()?;
+
+            // Writer automatically handles LAZ compression based on file extension
+            let mut writer = PointCloudWriter::create(&self.output_path, output_header)?;
             writer.write_points(&all_filtered)?;
             writer.close()?;
 
