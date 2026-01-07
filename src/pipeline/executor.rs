@@ -120,7 +120,7 @@ impl ExtractionPipeline {
             let mut builder = las::Builder::from(source_header.clone());
 
             // Update bounds to match the filtered points
-            builder.point_format = source_header.point_format().clone();
+            builder.point_format = *source_header.point_format();
 
             let output_header = builder.into_header()?;
 

@@ -141,7 +141,7 @@ impl TileIndexReader {
         let envelope_offset = 8; // After header
 
         let (min_x, max_x, min_y, max_y) = match envelope_type {
-            1 | 2 | 3 | 4 => {
+            1..=4 => {
                 // All envelope types start with min_x, max_x, min_y, max_y
                 if blob.len() < envelope_offset + 32 {
                     return Err(TileIndexError::InvalidGeometry(
