@@ -1,1 +1,3 @@
-// Pipeline module - to be implemented in Phase 3
+pub mod executor;
+
+pub use executor::{ExtractionPipeline, ExtractionStats};
