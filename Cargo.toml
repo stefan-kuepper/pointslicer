@@ -12,8 +12,10 @@ las = { version = "0.8", features = ["laz"] }
 
 # GeoPackage and spatial operations
 gpkg = "0.1"
+rusqlite = { version = "0.27", features = ["bundled"] }
 geo = "0.29"
 geo-types = "0.7"
+wkb = "0.7"
 
 # Error handling
 anyhow = "1.0"

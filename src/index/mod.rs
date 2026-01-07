@@ -1,1 +1,5 @@
-// Index module - to be implemented in Phase 2
+pub mod reader;
+pub mod tile;
+
+pub use reader::TileIndexReader;
+pub use tile::{TileInfo, TileMetadata};
