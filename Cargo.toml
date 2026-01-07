@@ -1,0 +1,27 @@
+[package]
+name = "tile-index-tool"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# LAS/LAZ I/O
+las = { version = "0.8", features = ["laz"] }
+
+# GeoPackage and spatial operations
+gpkg = "0.1"
+geo = "0.29"
+geo-types = "0.7"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Parallel processing
+rayon = "1.11"
+
+# Logging
+env_logger = "0.11"
+log = "0.4"
