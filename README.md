@@ -1,4 +1,4 @@
-# tile-index-tool
+# pointslicer
 
 A Rust CLI tool for extracting points from LAS/LAZ files using a GeoPackage tile index created by `pdal tindex`.
 
@@ -18,14 +18,14 @@ A Rust CLI tool for extracting points from LAS/LAZ files using a GeoPackage tile
 cargo build --release
 ```
 
-The binary will be available at `./target/release/tile-index-tool`.
+The binary will be available at `./target/release/pointslicer`.
 
 ## Usage
 
 ### Extract points within a vertical cylinder
 
 ```bash
-tile-index-tool \
+pointslicer \
   --index tiles.gpkg \
   --output extracted.laz \
   cylinder --x 12345.0 --y 67890.0 --diameter 12.0
@@ -35,13 +35,13 @@ tile-index-tool \
 
 ```bash
 # 2D bounding box
-tile-index-tool \
+pointslicer \
   --index tiles.gpkg \
   --output extracted.laz \
   bbox --min-x 10000 --max-x 20000 --min-y 30000 --max-y 40000
 
 # 3D bounding box with Z constraints
-tile-index-tool \
+pointslicer \
   --index tiles.gpkg \
   --output extracted.laz \
   bbox \
@@ -55,7 +55,7 @@ tile-index-tool \
 Add the `-v` flag for detailed logging:
 
 ```bash
-tile-index-tool -v \
+pointslicer -v \
   --index tiles.gpkg \
   --output extracted.laz \
   cylinder --x 12345 --y 67890 --diameter 12

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 /// Extract point cloud data using a tile index
 #[derive(Parser, Debug)]
-#[command(name = "tile-index-tool")]
+#[command(name = "pointslicer")]
 #[command(about = "Extract point cloud data from LAS/LAZ files using a tile index")]
 #[command(version)]
 pub struct Cli {

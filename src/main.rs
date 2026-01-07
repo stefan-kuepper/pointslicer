@@ -1,6 +1,6 @@
 use clap::Parser;
-use tile_index_tool::cli::commands::Cli;
-use tile_index_tool::cli::execute;
+use pointslicer::cli::commands::Cli;
+use pointslicer::cli::execute;
 
 fn main() {
     // Parse command-line arguments
