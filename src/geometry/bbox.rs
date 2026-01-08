@@ -1,5 +1,5 @@
 use super::traits::ExtractGeometry;
-use geo::{coord, Rect};
+use geo::{Rect, coord};
 
 /// A 2D or 3D bounding box for point extraction
 #[derive(Debug, Clone)]
@@ -26,14 +26,7 @@ impl BoundingBox {
     }
 
     /// Create a new 3D bounding box
-    pub fn new_3d(
-        min_x: f64,
-        max_x: f64,
-        min_y: f64,
-        max_y: f64,
-        min_z: f64,
-        max_z: f64,
-    ) -> Self {
+    pub fn new_3d(min_x: f64, max_x: f64, min_y: f64, max_y: f64, min_z: f64, max_z: f64) -> Self {
         Self {
             min_x,
             max_x,

@@ -2,10 +2,7 @@ use crate::geometry::ExtractGeometry;
 use las::Point;
 
 /// Filter points based on an extraction geometry
-pub fn filter_points<G: ExtractGeometry>(
-    points: &[Point],
-    geometry: &G,
-) -> Vec<Point> {
+pub fn filter_points<G: ExtractGeometry>(points: &[Point], geometry: &G) -> Vec<Point> {
     points
         .iter()
         .filter(|point| geometry.contains_xyz(point.x, point.y, point.z))
@@ -14,10 +11,7 @@ pub fn filter_points<G: ExtractGeometry>(
 }
 
 /// Filter points from an iterator based on an extraction geometry
-pub fn filter_points_iter<G: ExtractGeometry, I>(
-    points: I,
-    geometry: &G,
-) -> Vec<Point>
+pub fn filter_points_iter<G: ExtractGeometry, I>(points: I, geometry: &G) -> Vec<Point>
 where
     I: Iterator<Item = Point>,
 {
@@ -44,9 +38,9 @@ mod tests {
         let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
 
         let points = vec![
-            create_test_point(5.0, 5.0, 0.0),  // inside
-            create_test_point(15.0, 5.0, 0.0), // outside
-            create_test_point(0.0, 0.0, 0.0),  // on boundary (included)
+            create_test_point(5.0, 5.0, 0.0),   // inside
+            create_test_point(15.0, 5.0, 0.0),  // outside
+            create_test_point(0.0, 0.0, 0.0),   // on boundary (included)
             create_test_point(10.0, 10.0, 0.0), // on boundary (included)
         ];
 
@@ -59,9 +53,9 @@ mod tests {
         let bbox = BoundingBox::new_3d(0.0, 10.0, 0.0, 10.0, 0.0, 5.0);
 
         let points = vec![
-            create_test_point(5.0, 5.0, 2.0),   // inside
-            create_test_point(5.0, 5.0, 10.0),  // outside (z too high)
-            create_test_point(5.0, 5.0, -1.0),  // outside (z too low)
+            create_test_point(5.0, 5.0, 2.0),  // inside
+            create_test_point(5.0, 5.0, 10.0), // outside (z too high)
+            create_test_point(5.0, 5.0, -1.0), // outside (z too low)
         ];
 
         let filtered = filter_points(&points, &bbox);

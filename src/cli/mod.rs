@@ -45,7 +45,10 @@ pub fn execute(cli: Cli) -> Result<()> {
     println!("  Tiles processed: {}", stats.tiles_processed);
     println!("  Points read:     {}", stats.points_read);
     println!("  Points written:  {}", stats.points_written);
-    println!("  Elapsed time:    {:.2}s", stats.elapsed_time.as_secs_f64());
+    println!(
+        "  Elapsed time:    {:.2}s",
+        stats.elapsed_time.as_secs_f64()
+    );
 
     Ok(())
 }

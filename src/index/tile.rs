@@ -35,11 +35,7 @@ impl TileInfo {
     }
 
     /// Create a new TileInfo with metadata
-    pub fn with_metadata(
-        file_path: PathBuf,
-        bounds: Rect<f64>,
-        metadata: TileMetadata,
-    ) -> Self {
+    pub fn with_metadata(file_path: PathBuf, bounds: Rect<f64>, metadata: TileMetadata) -> Self {
         Self {
             file_path,
             bounds,

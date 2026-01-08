@@ -1,5 +1,5 @@
 use super::traits::ExtractGeometry;
-use geo::{coord, Rect};
+use geo::{Rect, coord};
 
 /// A vertical cylinder defined by center X,Y coordinates and radius
 #[derive(Debug, Clone)]

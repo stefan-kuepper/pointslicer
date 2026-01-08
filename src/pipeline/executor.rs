@@ -1,7 +1,7 @@
 use crate::error::Result;
 use crate::geometry::ExtractGeometry;
 use crate::index::TileIndexReader;
-use crate::pointcloud::{filter_points, PointCloudReader, PointCloudWriter};
+use crate::pointcloud::{PointCloudReader, PointCloudWriter, filter_points};
 use las::Point;
 use rayon::prelude::*;
 use std::path::{Path, PathBuf};

@@ -1,7 +1,7 @@
 use super::tile::TileInfo;
 use crate::error::{Result, TileIndexError};
 use crate::geometry::ExtractGeometry;
-use geo::{coord, Rect};
+use geo::{Rect, coord};
 use rusqlite::Connection;
 use std::path::Path;
 

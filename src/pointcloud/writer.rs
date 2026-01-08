@@ -28,9 +28,9 @@ impl PointCloudWriter<BufWriter<std::fs::File>> {
             builder.point_format.is_compressed = true;
         }
 
-        let header = builder.into_header().map_err(|e| {
-            TileIndexError::OutputError(format!("Failed to create header: {}", e))
-        })?;
+        let header = builder
+            .into_header()
+            .map_err(|e| TileIndexError::OutputError(format!("Failed to create header: {}", e)))?;
 
         Self::create(path, header)
     }
