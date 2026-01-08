@@ -34,10 +34,51 @@ impl<'a> PointCloudReader<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use las::{Builder, Point, Write, Writer};
+    use tempfile::TempDir;
+
+    fn create_test_las_file(
+        path: &std::path::Path,
+        point_count: usize,
+    ) -> crate::error::Result<()> {
+        let mut builder = Builder::from((1, 4));
+        builder.point_format = las::point::Format::new(0)?;
+        let header = builder.into_header()?;
+
+        let mut writer = Writer::from_path(path, header)?;
+        for i in 0..point_count {
+            let mut point = Point::default();
+            point.x = i as f64;
+            point.y = i as f64;
+            point.z = i as f64;
+            writer.write(point)?;
+        }
+        writer.close()?;
+        Ok(())
+    }
 
     #[test]
-    fn test_reader_construction() {
-        // This test just ensures the API compiles
-        // Real testing would require a sample LAS file
+    fn test_read_las_file() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test.las");
+
+        // Create a test LAS file with 10 points
+        create_test_las_file(&test_file, 10).unwrap();
+
+        // Read the file
+        let mut reader = PointCloudReader::open(&test_file).unwrap();
+
+        // Verify header
+        assert_eq!(reader.header().number_of_points(), 10);
+
+        // Verify we can read points
+        let points = reader.points().unwrap();
+        assert_eq!(points.len(), 10);
+    }
+
+    #[test]
+    fn test_read_nonexistent_file() {
+        let result = PointCloudReader::open("/nonexistent/file.las");
+        assert!(result.is_err());
     }
 }

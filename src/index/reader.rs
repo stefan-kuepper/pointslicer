@@ -199,9 +199,81 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_column_names() {
-        // Test that common column names are recognized
-        let column_names = ["location", "path", "file", "filename"];
-        assert!(column_names.contains(&"location"));
+    fn test_extract_bounds_from_blob_type1() {
+        // Test GeoPackage Binary Format with envelope type 1 (XY)
+        let mut blob = Vec::new();
+
+        // Magic bytes "GP"
+        blob.push(0x47);
+        blob.push(0x50);
+
+        // Version and flags (envelope type 1 = 0x02)
+        blob.push(0x00);
+        blob.push(0x02);
+
+        // SRS ID (4 bytes, little-endian)
+        blob.extend_from_slice(&0u32.to_le_bytes());
+
+        // Envelope: min_x=10.0, max_x=20.0, min_y=30.0, max_y=40.0
+        blob.extend_from_slice(&10.0f64.to_le_bytes());
+        blob.extend_from_slice(&20.0f64.to_le_bytes());
+        blob.extend_from_slice(&30.0f64.to_le_bytes());
+        blob.extend_from_slice(&40.0f64.to_le_bytes());
+
+        let bounds = TileIndexReader::extract_bounds_from_blob(&blob).unwrap();
+
+        assert_eq!(bounds.min().x, 10.0);
+        assert_eq!(bounds.max().x, 20.0);
+        assert_eq!(bounds.min().y, 30.0);
+        assert_eq!(bounds.max().y, 40.0);
+    }
+
+    #[test]
+    fn test_extract_bounds_invalid_magic_bytes() {
+        let mut blob = Vec::new();
+
+        // Wrong magic bytes
+        blob.push(0x00);
+        blob.push(0x00);
+        blob.push(0x00);
+        blob.push(0x02);
+        blob.extend_from_slice(&0u32.to_le_bytes());
+        blob.extend_from_slice(&10.0f64.to_le_bytes());
+        blob.extend_from_slice(&20.0f64.to_le_bytes());
+        blob.extend_from_slice(&30.0f64.to_le_bytes());
+        blob.extend_from_slice(&40.0f64.to_le_bytes());
+
+        let result = TileIndexReader::extract_bounds_from_blob(&blob);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("magic"));
+    }
+
+    #[test]
+    fn test_extract_bounds_blob_too_short() {
+        let blob = vec![0x47, 0x50, 0x00, 0x02]; // Only 4 bytes
+
+        let result = TileIndexReader::extract_bounds_from_blob(&blob);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("too short"));
+    }
+
+    #[test]
+    fn test_extract_bounds_envelope_type_0_unsupported() {
+        let mut blob = Vec::new();
+
+        // Magic bytes "GP"
+        blob.push(0x47);
+        blob.push(0x50);
+
+        // Version and flags (envelope type 0 = 0x00)
+        blob.push(0x00);
+        blob.push(0x00);
+
+        // SRS ID
+        blob.extend_from_slice(&0u32.to_le_bytes());
+
+        let result = TileIndexReader::extract_bounds_from_blob(&blob);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("no envelope"));
     }
 }

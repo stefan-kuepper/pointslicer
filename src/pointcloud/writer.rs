@@ -68,10 +68,66 @@ impl<W: 'static + std::io::Write + std::io::Seek + std::fmt::Debug + Send> Point
 #[cfg(test)]
 mod tests {
     use super::*;
+    use las::{Builder, Point, Read, Reader};
+    use tempfile::TempDir;
 
     #[test]
-    fn test_writer_construction() {
-        // This test just ensures the API compiles
-        // Real testing would require writing to a temp file
+    fn test_write_and_read_back() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_output.las");
+
+        // Create header
+        let mut builder = Builder::from((1, 4));
+        builder.point_format = las::point::Format::new(0).unwrap();
+        let header = builder.into_header().unwrap();
+
+        // Write some points
+        let mut writer = PointCloudWriter::create(&test_file, header).unwrap();
+        let mut test_points = Vec::new();
+        for i in 0..5 {
+            let mut point = Point::default();
+            point.x = i as f64 * 10.0;
+            point.y = i as f64 * 20.0;
+            point.z = i as f64 * 30.0;
+            test_points.push(point);
+        }
+        writer.write_points(&test_points).unwrap();
+        writer.close().unwrap();
+
+        // Read back and verify
+        let mut reader = Reader::from_path(&test_file).unwrap();
+        assert_eq!(reader.header().number_of_points(), 5);
+
+        let read_points: Vec<_> = reader.points().map(|p| p.unwrap()).collect();
+        assert_eq!(read_points.len(), 5);
+        for (i, point) in read_points.iter().enumerate() {
+            assert_eq!(point.x, i as f64 * 10.0);
+            assert_eq!(point.y, i as f64 * 20.0);
+            assert_eq!(point.z, i as f64 * 30.0);
+        }
+    }
+
+    #[test]
+    fn test_write_laz_compression() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_output.laz");
+
+        // Create and write
+        let mut builder = Builder::from((1, 4));
+        builder.point_format = las::point::Format::new(0).unwrap();
+        let header = builder.into_header().unwrap();
+
+        let mut writer = PointCloudWriter::create(&test_file, header).unwrap();
+        let mut point = Point::default();
+        point.x = 100.0;
+        point.y = 200.0;
+        point.z = 300.0;
+        writer.write_points(&[point]).unwrap();
+        writer.close().unwrap();
+
+        // Verify file was created and is readable
+        assert!(test_file.exists());
+        let reader = Reader::from_path(&test_file).unwrap();
+        assert_eq!(reader.header().number_of_points(), 1);
     }
 }
