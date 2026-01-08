@@ -43,3 +43,41 @@ impl TileInfo {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use geo::coord;
+
+    #[test]
+    fn test_tile_info_new() {
+        let path = PathBuf::from("test.laz");
+        let bounds = Rect::new(coord! { x: 0.0, y: 0.0 }, coord! { x: 100.0, y: 100.0 });
+
+        let tile = TileInfo::new(path.clone(), bounds.clone());
+
+        assert_eq!(tile.file_path, path);
+        assert_eq!(tile.bounds, bounds);
+        assert!(tile.metadata.is_none());
+    }
+
+    #[test]
+    fn test_tile_info_with_metadata() {
+        let path = PathBuf::from("test.laz");
+        let bounds = Rect::new(coord! { x: 0.0, y: 0.0 }, coord! { x: 100.0, y: 100.0 });
+        let metadata = TileMetadata {
+            point_count: Some(1234),
+            srs: Some("EPSG:32632".to_string()),
+        };
+
+        let tile = TileInfo::with_metadata(path.clone(), bounds.clone(), metadata.clone());
+
+        assert_eq!(tile.file_path, path);
+        assert_eq!(tile.bounds, bounds);
+        assert!(tile.metadata.is_some());
+
+        let tile_metadata = tile.metadata.unwrap();
+        assert_eq!(tile_metadata.point_count, Some(1234));
+        assert_eq!(tile_metadata.srs, Some("EPSG:32632".to_string()));
+    }
+}

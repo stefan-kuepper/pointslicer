@@ -130,4 +130,88 @@ mod tests {
         let reader = Reader::from_path(&test_file).unwrap();
         assert_eq!(reader.header().number_of_points(), 1);
     }
+
+    #[test]
+    fn test_create_with_default_las() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_output.las");
+
+        // Create writer with default header
+        let mut writer = PointCloudWriter::create_with_default(&test_file).unwrap();
+
+        // Write some points
+        let mut point = Point::default();
+        point.x = 1.0;
+        point.y = 2.0;
+        point.z = 3.0;
+        writer.write_point(point).unwrap();
+        writer.close().unwrap();
+
+        // Verify file was created
+        assert!(test_file.exists());
+        let reader = Reader::from_path(&test_file).unwrap();
+        assert_eq!(reader.header().number_of_points(), 1);
+    }
+
+    #[test]
+    fn test_create_with_default_laz() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_output.laz");
+
+        // Create writer with default header for LAZ file
+        let mut writer = PointCloudWriter::create_with_default(&test_file).unwrap();
+
+        // Write some points
+        let mut point = Point::default();
+        point.x = 1.0;
+        point.y = 2.0;
+        point.z = 3.0;
+        writer.write_point(point).unwrap();
+        writer.close().unwrap();
+
+        // Verify file was created
+        assert!(test_file.exists());
+        let reader = Reader::from_path(&test_file).unwrap();
+        assert_eq!(reader.header().number_of_points(), 1);
+    }
+
+    #[test]
+    fn test_write_empty_points() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_empty.las");
+
+        let mut builder = Builder::from((1, 4));
+        builder.point_format = las::point::Format::new(0).unwrap();
+        let header = builder.into_header().unwrap();
+
+        let mut writer = PointCloudWriter::create(&test_file, header).unwrap();
+
+        // Write empty slice
+        writer.write_points(&[]).unwrap();
+        writer.close().unwrap();
+
+        // Verify file was created with 0 points
+        assert!(test_file.exists());
+        let reader = Reader::from_path(&test_file).unwrap();
+        assert_eq!(reader.header().number_of_points(), 0);
+    }
+
+    #[test]
+    fn test_header_access() {
+        let temp_dir = TempDir::new().unwrap();
+        let test_file = temp_dir.path().join("test_header.las");
+
+        let mut builder = Builder::from((1, 4));
+        builder.point_format = las::point::Format::new(0).unwrap();
+        let header = builder.into_header().unwrap();
+
+        let writer = PointCloudWriter::create(&test_file, header).unwrap();
+
+        // Test header access
+        let writer_header = writer.header();
+        assert_eq!(writer_header.version().major, 1);
+        assert_eq!(writer_header.version().minor, 4);
+
+        writer.close().unwrap();
+    }
 }

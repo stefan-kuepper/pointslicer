@@ -74,4 +74,54 @@ mod tests {
         let filtered = filter_points_iter(points.into_iter(), &bbox);
         assert_eq!(filtered.len(), 1);
     }
+
+    #[test]
+    fn test_filter_points_empty() {
+        let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+        let points: Vec<Point> = vec![];
+
+        let filtered = filter_points(&points, &bbox);
+        assert_eq!(filtered.len(), 0);
+    }
+
+    #[test]
+    fn test_filter_points_all_outside() {
+        let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+        let points = vec![
+            create_test_point(15.0, 15.0, 0.0),
+            create_test_point(20.0, 20.0, 0.0),
+            create_test_point(-5.0, -5.0, 0.0),
+        ];
+
+        let filtered = filter_points(&points, &bbox);
+        assert_eq!(filtered.len(), 0);
+    }
+
+    #[test]
+    fn test_filter_points_boundary_cases() {
+        let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+        let points = vec![
+            create_test_point(0.0, 0.0, 0.0),   // exact corner
+            create_test_point(10.0, 10.0, 0.0), // exact corner
+            create_test_point(5.0, 0.0, 0.0),   // exact edge
+            create_test_point(0.0, 5.0, 0.0),   // exact edge
+        ];
+
+        let filtered = filter_points(&points, &bbox);
+        // All boundary points should be included
+        assert_eq!(filtered.len(), 4);
+    }
+
+    #[test]
+    fn test_filter_points_all_inside() {
+        let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+        let points = vec![
+            create_test_point(1.0, 1.0, 0.0),
+            create_test_point(5.0, 5.0, 0.0),
+            create_test_point(9.0, 9.0, 0.0),
+        ];
+
+        let filtered = filter_points(&points, &bbox);
+        assert_eq!(filtered.len(), 3);
+    }
 }
