@@ -1,9 +1,9 @@
 pub mod commands;
 
 use commands::{Cli, Commands};
+use pointslicer_core::Result;
 use pointslicer_core::geometry::{BoundingBox, VerticalCylinder};
 use pointslicer_core::pipeline::ExtractionPipeline;
-use pointslicer_core::Result;
 
 /// Execute the CLI command
 pub fn execute(cli: Cli) -> Result<()> {

@@ -1,26 +1,43 @@
 use geo::Rect;
 use std::path::PathBuf;
 
-/// Information about a tile from the GeoPackage index
+/// Information about a tile from the GeoPackage index.
+///
+/// This struct contains the file path to a LAS/LAZ tile and its spatial
+/// bounds as extracted from the GeoPackage geometry.
+///
+/// # Fields
+///
+/// - `file_path`: Path to the LAS/LAZ file
+/// - `bounds`: 2D bounding box of the tile (from GeoPackage geometry)
+/// - `metadata`: Optional metadata about the tile
 #[derive(Debug, Clone)]
 pub struct TileInfo {
-    /// Path to the LAS/LAZ file
+    /// Path to the LAS/LAZ file.
     pub file_path: PathBuf,
 
-    /// 2D bounding box of the tile (from GeoPackage geometry)
+    /// 2D bounding box of the tile (from GeoPackage geometry).
     pub bounds: Rect<f64>,
 
-    /// Optional metadata
+    /// Optional metadata about the tile.
     pub metadata: Option<TileMetadata>,
 }
 
-/// Optional metadata for a tile
+/// Optional metadata for a tile.
+///
+/// This struct contains additional information about a tile that may be
+/// available in some GeoPackage indices.
+///
+/// # Fields
+///
+/// - `point_count`: Number of points in this tile (if available)
+/// - `srs`: Spatial reference system (if available)
 #[derive(Debug, Clone)]
 pub struct TileMetadata {
-    /// Number of points in this tile (if available)
+    /// Number of points in this tile (if available).
     pub point_count: Option<u64>,
 
-    /// Spatial reference system (if available)
+    /// Spatial reference system (if available).
     pub srs: Option<String>,
 }
 

@@ -1,7 +1,44 @@
 use crate::geometry::ExtractGeometry;
 use las::Point;
 
-/// Filter points based on an extraction geometry
+/// Filter points based on an extraction geometry.
+///
+/// This function takes a slice of points and returns only those points
+/// that are inside the specified extraction geometry.
+///
+/// # Parameters
+///
+/// - `points`: Slice of points to filter
+/// - `geometry`: Extraction geometry to test points against
+///
+/// # Returns
+///
+/// A vector containing only the points that are inside the geometry.
+///
+/// # Examples
+///
+/// ```
+/// use pointslicer_core::pointcloud::filter_points;
+/// use pointslicer_core::geometry::BoundingBox;
+/// use las::Point;
+///
+/// let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+///
+/// let mut point1 = Point::default();
+/// point1.x = 5.0;
+/// point1.y = 5.0;
+/// point1.z = 0.0;
+///
+/// let mut point2 = Point::default();
+/// point2.x = 15.0;
+/// point2.y = 15.0;
+/// point2.z = 0.0;
+///
+/// let points = vec![point1, point2];
+/// let filtered = filter_points(&points, &bbox);
+///
+/// assert_eq!(filtered.len(), 1);
+/// ```
 pub fn filter_points<G: ExtractGeometry>(points: &[Point], geometry: &G) -> Vec<Point> {
     points
         .iter()
@@ -10,7 +47,38 @@ pub fn filter_points<G: ExtractGeometry>(points: &[Point], geometry: &G) -> Vec<
         .collect()
 }
 
-/// Filter points from an iterator based on an extraction geometry
+/// Filter points from an iterator based on an extraction geometry.
+///
+/// This function takes an iterator of points and returns only those points
+/// that are inside the specified extraction geometry. This is more memory
+/// efficient than `filter_points()` for large datasets.
+///
+/// # Parameters
+///
+/// - `points`: Iterator of points to filter
+/// - `geometry`: Extraction geometry to test points against
+///
+/// # Returns
+///
+/// A vector containing only the points that are inside the geometry.
+///
+/// # Examples
+///
+/// ```
+/// use pointslicer_core::pointcloud::filter_points_iter;
+/// use pointslicer_core::geometry::BoundingBox;
+/// use las::Point;
+///
+/// let bbox = BoundingBox::new_2d(0.0, 10.0, 0.0, 10.0);
+///
+/// let points = vec![
+///     Point { x: 5.0, y: 5.0, z: 0.0, ..Default::default() },
+///     Point { x: 15.0, y: 15.0, z: 0.0, ..Default::default() },
+/// ];
+///
+/// let filtered = filter_points_iter(points.into_iter(), &bbox);
+/// assert_eq!(filtered.len(), 1);
+/// ```
 pub fn filter_points_iter<G: ExtractGeometry, I>(points: I, geometry: &G) -> Vec<Point>
 where
     I: Iterator<Item = Point>,

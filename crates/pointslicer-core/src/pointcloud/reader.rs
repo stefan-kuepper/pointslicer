@@ -2,7 +2,31 @@ use crate::error::Result;
 use las::{Point, Read};
 use std::path::Path;
 
-/// Wrapper for reading LAS/LAZ files
+/// Wrapper for reading LAS/LAZ files.
+///
+/// This struct provides a convenient interface for reading point cloud data
+/// from LAS or LAZ files, with automatic decompression for LAZ files.
+///
+/// # Examples
+///
+/// ```no_run
+/// use pointslicer_core::pointcloud::PointCloudReader;
+///
+/// # fn main() -> Result<(), pointslicer_core::TileIndexError> {
+/// // Open a LAS/LAZ file
+/// let mut reader = PointCloudReader::open("input.laz")?;
+///
+/// // Get file header information
+/// let header = reader.header();
+/// println!("Point format: {:?}", header.point_format());
+/// println!("Number of points: {}", header.number_of_points());
+///
+/// // Read all points
+/// let points = reader.points()?;
+/// println!("Read {} points", points.len());
+/// # Ok(())
+/// # }
+/// ```
 pub struct PointCloudReader<'a> {
     reader: las::Reader<'a>,
 }

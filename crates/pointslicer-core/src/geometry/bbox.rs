@@ -1,14 +1,49 @@
 use super::traits::ExtractGeometry;
 use geo::{Rect, coord};
 
-/// A 2D or 3D bounding box for point extraction
+/// A 2D or 3D axis-aligned bounding box for point extraction.
+///
+/// This struct represents a rectangular region in 2D or 3D space that can be
+/// used to filter points. It supports both 2D (X,Y only) and 3D (X,Y,Z)
+/// extraction.
+///
+/// # Examples
+///
+/// ```
+/// use pointslicer_core::geometry::{BoundingBox, ExtractGeometry};
+///
+/// // Create a 2D bounding box
+/// let bbox_2d = BoundingBox::new_2d(10000.0, 20000.0, 30000.0, 40000.0);
+///
+/// // Create a 3D bounding box with Z constraints
+/// let bbox_3d = BoundingBox::new_3d(10000.0, 20000.0, 30000.0, 40000.0, 0.0, 100.0);
+///
+/// // Check if a point is inside
+/// assert!(bbox_2d.contains_xy(15000.0, 35000.0));
+/// assert!(bbox_3d.contains_xyz(15000.0, 35000.0, 50.0));
+/// ```
 #[derive(Debug, Clone)]
 pub struct BoundingBox {
+    /// Minimum X coordinate of the bounding box.
     pub min_x: f64,
+
+    /// Maximum X coordinate of the bounding box.
     pub max_x: f64,
+
+    /// Minimum Y coordinate of the bounding box.
     pub min_y: f64,
+
+    /// Maximum Y coordinate of the bounding box.
     pub max_y: f64,
+
+    /// Optional minimum Z coordinate for 3D extraction.
+    ///
+    /// If `None`, no lower Z constraint is applied.
     pub min_z: Option<f64>,
+
+    /// Optional maximum Z coordinate for 3D extraction.
+    ///
+    /// If `None`, no upper Z constraint is applied.
     pub max_z: Option<f64>,
 }
 

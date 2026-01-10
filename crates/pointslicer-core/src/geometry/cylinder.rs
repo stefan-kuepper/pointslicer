@@ -1,11 +1,37 @@
 use super::traits::ExtractGeometry;
 use geo::{Rect, coord};
 
-/// A vertical cylinder defined by center X,Y coordinates and radius
+/// A vertical cylinder defined by center coordinates and radius.
+///
+/// This struct represents a vertical (Z-aligned) cylinder that can be used
+/// to extract points within a circular region. The cylinder extends infinitely
+/// in the Z direction.
+///
+/// # Examples
+///
+/// ```
+/// use pointslicer_core::geometry::{VerticalCylinder, ExtractGeometry};
+///
+/// // Create a cylinder from diameter
+/// let cylinder = VerticalCylinder::from_diameter(12345.0, 67890.0, 12.0);
+///
+/// // Create a cylinder from radius
+/// let cylinder2 = VerticalCylinder::from_radius(12345.0, 67890.0, 6.0);
+///
+/// // Check if points are inside
+/// assert!(cylinder.contains_xy(12345.0, 67890.0)); // Center point
+/// assert!(cylinder.contains_xy(12351.0, 67890.0)); // 6 units right
+/// assert!(!cylinder.contains_xy(12357.0, 67890.0)); // 12 units right (outside)
+/// ```
 #[derive(Debug, Clone)]
 pub struct VerticalCylinder {
+    /// X coordinate of the cylinder center.
     pub center_x: f64,
+
+    /// Y coordinate of the cylinder center.
     pub center_y: f64,
+
+    /// Radius of the cylinder.
     pub radius: f64,
 }
 
