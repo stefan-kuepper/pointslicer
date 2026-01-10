@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 /// Get the path to the compiled pointslicer binary
+#[allow(dead_code)]
 pub fn get_binary_path() -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.pop(); // Go up from pointslicer-cli
@@ -18,6 +19,7 @@ pub fn get_binary_path() -> PathBuf {
 }
 
 /// Run pointslicer with given arguments
+#[allow(dead_code)]
 pub fn run_pointslicer(args: &[&str]) -> anyhow::Result<Output> {
     let binary = get_binary_path();
     let output = Command::new(binary).args(args).output()?;
@@ -25,6 +27,7 @@ pub fn run_pointslicer(args: &[&str]) -> anyhow::Result<Output> {
 }
 
 /// Assert that command succeeded (exit code 0)
+#[allow(dead_code)]
 pub fn assert_success(output: &Output) {
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -39,6 +42,7 @@ pub fn assert_success(output: &Output) {
 }
 
 /// Assert that command failed with expected error message
+#[allow(dead_code)]
 pub fn assert_failure(output: &Output, expected_msg: &str) {
     assert!(
         !output.status.success(),
@@ -64,6 +68,7 @@ pub fn assert_laz_exists(path: &Path) {
 }
 
 /// Assert LAZ file has expected point count
+#[allow(dead_code)]
 pub fn assert_laz_point_count(path: &Path, expected: u64) -> anyhow::Result<()> {
     let actual = read_laz_point_count(path)?;
     assert_eq!(
@@ -88,12 +93,14 @@ pub fn read_laz_points(path: &Path) -> anyhow::Result<Vec<las::Point>> {
 }
 
 /// Get the point format from a LAZ file
+#[allow(dead_code)]
 pub fn get_laz_point_format(path: &Path) -> anyhow::Result<u8> {
     let reader = Reader::from_path(path)?;
     Ok(reader.header().point_format().to_u8()?)
 }
 
 /// Assert that stderr contains a specific message
+#[allow(dead_code)]
 pub fn assert_stderr_contains(output: &Output, text: &str) {
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
@@ -105,6 +112,7 @@ pub fn assert_stderr_contains(output: &Output, text: &str) {
 }
 
 /// Assert that stdout contains a specific message
+#[allow(dead_code)]
 pub fn assert_stdout_contains(output: &Output, text: &str) {
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(

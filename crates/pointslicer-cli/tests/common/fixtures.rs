@@ -74,6 +74,7 @@ impl TestFixture {
     }
 
     /// Create a fixture with many tiles for parallel processing tests
+    #[allow(dead_code)]
     pub fn multi_tile(count: usize) -> anyhow::Result<Self> {
         let mut tiles = Vec::new();
         let tile_size = 100.0;
