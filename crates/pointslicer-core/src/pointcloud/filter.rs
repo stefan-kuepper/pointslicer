@@ -94,11 +94,12 @@ mod tests {
     use crate::geometry::BoundingBox;
 
     fn create_test_point(x: f64, y: f64, z: f64) -> Point {
-        let mut point = Point::default();
-        point.x = x;
-        point.y = y;
-        point.z = z;
-        point
+        Point {
+            x,
+            y,
+            z,
+            ..Default::default()
+        }
     }
 
     #[test]

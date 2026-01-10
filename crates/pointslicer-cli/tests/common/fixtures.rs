@@ -185,18 +185,16 @@ fn create_test_geopackage(path: &Path, tiles: &[TileSpec], temp_dir: &Path) -> a
 
 /// Create a GeoPackage Binary Format geometry blob with envelope type 1 (XY)
 fn create_geopackage_geometry_blob(bounds: &Rect<f64>) -> Vec<u8> {
-    let mut blob = Vec::new();
-
-    // Header: magic bytes "GP"
-    blob.push(0x47); // 'G'
-    blob.push(0x50); // 'P'
-
-    // Version (0)
-    blob.push(0x00);
-
-    // Flags: envelope type 1 (XY), binary type 0 (standard WKB)
-    // Envelope type is in bits 1-3, so type 1 = 0b00000010 = 0x02
-    blob.push(0x02);
+    let mut blob = vec![
+        // Header: magic bytes "GP"
+        0x47, // 'G'
+        0x50, // 'P'
+        // Version (0)
+        0x00,
+        // Flags: envelope type 1 (XY), binary type 0 (standard WKB)
+        // Envelope type is in bits 1-3, so type 1 = 0b00000010 = 0x02
+        0x02,
+    ];
 
     // SRS ID (4 bytes, little-endian, 0 = undefined)
     blob.extend_from_slice(&0u32.to_le_bytes());
@@ -258,10 +256,12 @@ pub fn create_test_laz_file(
 
     // Write points
     for test_point in points {
-        let mut point = Point::default();
-        point.x = test_point.x;
-        point.y = test_point.y;
-        point.z = test_point.z;
+        let point = Point {
+            x: test_point.x,
+            y: test_point.y,
+            z: test_point.z,
+            ..Default::default()
+        };
         writer.write(point)?;
     }
 

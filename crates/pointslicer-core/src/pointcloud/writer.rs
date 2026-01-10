@@ -108,10 +108,12 @@ mod tests {
         let mut writer = PointCloudWriter::create(&test_file, header).unwrap();
         let mut test_points = Vec::new();
         for i in 0..5 {
-            let mut point = Point::default();
-            point.x = i as f64 * 10.0;
-            point.y = i as f64 * 20.0;
-            point.z = i as f64 * 30.0;
+            let point = Point {
+                x: i as f64 * 10.0,
+                y: i as f64 * 20.0,
+                z: i as f64 * 30.0,
+                ..Default::default()
+            };
             test_points.push(point);
         }
         writer.write_points(&test_points).unwrap();
@@ -141,10 +143,12 @@ mod tests {
         let header = builder.into_header().unwrap();
 
         let mut writer = PointCloudWriter::create(&test_file, header).unwrap();
-        let mut point = Point::default();
-        point.x = 100.0;
-        point.y = 200.0;
-        point.z = 300.0;
+        let point = Point {
+            x: 100.0,
+            y: 200.0,
+            z: 300.0,
+            ..Default::default()
+        };
         writer.write_points(&[point]).unwrap();
         writer.close().unwrap();
 
@@ -163,10 +167,12 @@ mod tests {
         let mut writer = PointCloudWriter::create_with_default(&test_file).unwrap();
 
         // Write some points
-        let mut point = Point::default();
-        point.x = 1.0;
-        point.y = 2.0;
-        point.z = 3.0;
+        let point = Point {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+            ..Default::default()
+        };
         writer.write_point(point).unwrap();
         writer.close().unwrap();
 
@@ -185,10 +191,12 @@ mod tests {
         let mut writer = PointCloudWriter::create_with_default(&test_file).unwrap();
 
         // Write some points
-        let mut point = Point::default();
-        point.x = 1.0;
-        point.y = 2.0;
-        point.z = 3.0;
+        let point = Point {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+            ..Default::default()
+        };
         writer.write_point(point).unwrap();
         writer.close().unwrap();
 

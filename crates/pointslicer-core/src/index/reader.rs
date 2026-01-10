@@ -228,15 +228,11 @@ mod tests {
     #[test]
     fn test_extract_bounds_from_blob_type1() {
         // Test GeoPackage Binary Format with envelope type 1 (XY)
-        let mut blob = Vec::new();
-
-        // Magic bytes "GP"
-        blob.push(0x47);
-        blob.push(0x50);
-
-        // Version and flags (envelope type 1 = 0x02)
-        blob.push(0x00);
-        blob.push(0x02);
+        let mut blob = vec![
+            // Magic bytes "GP"
+            0x47, 0x50, // Version and flags (envelope type 1 = 0x02)
+            0x00, 0x02,
+        ];
 
         // SRS ID (4 bytes, little-endian)
         blob.extend_from_slice(&0u32.to_le_bytes());
@@ -256,14 +252,11 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_bounds_invalid_magic_bytes() {
-        let mut blob = Vec::new();
-
-        // Wrong magic bytes
-        blob.push(0x00);
-        blob.push(0x00);
-        blob.push(0x00);
-        blob.push(0x02);
+    fn test_extract_bounds_from_blob_invalid_magic() {
+        let mut blob = vec![
+            // Wrong magic bytes
+            0x00, 0x00, 0x00, 0x02,
+        ];
         blob.extend_from_slice(&0u32.to_le_bytes());
         blob.extend_from_slice(&10.0f64.to_le_bytes());
         blob.extend_from_slice(&20.0f64.to_le_bytes());
@@ -285,15 +278,12 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_bounds_envelope_type_0_unsupported() {
-        let mut blob = Vec::new();
-
-        // Magic bytes "GP"
-        blob.push(0x47);
-        blob.push(0x50);
-
-        // Version and flags (envelope type 0 = 0x00)
-        blob.push(0x00);
+    fn test_extract_bounds_from_blob_type0() {
+        let mut blob = vec![
+            // Magic bytes "GP"
+            0x47, 0x50, // Version and flags (envelope type 0 = 0x00)
+            0x00, 0x00,
+        ];
         blob.push(0x00);
 
         // SRS ID
