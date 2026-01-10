@@ -1,12 +1,12 @@
-[package]
-name = "pointslicer"
+[workspace]
+members = ["crates/pointslicer-core", "crates/pointslicer-cli"]
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-# CLI
-clap = { version = "4", features = ["derive"] }
-
+[workspace.dependencies]
 # LAS/LAZ I/O
 las = { version = "0.8", features = ["laz"] }
 
@@ -28,6 +28,9 @@ rayon = "1.11"
 env_logger = "0.11"
 log = "0.4"
 
-[dev-dependencies]
-assert_cmd = "2.0"    # CLI testing utilities
-tempfile = "3.8"      # Temporary directories for test outputs
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Testing
+assert_cmd = "2.0"
+tempfile = "3.8"

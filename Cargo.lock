@@ -723,6 +723,19 @@ dependencies = [
  "clap",
  "env_logger",
  "geo",
+ "las",
+ "log",
+ "pointslicer-core",
+ "rusqlite",
+ "tempfile",
+]
+
+[[package]]
+name = "pointslicer-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "geo",
  "geo-types",
  "gpkg",
  "las",

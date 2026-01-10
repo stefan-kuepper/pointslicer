@@ -1,0 +1,28 @@
+[package]
+name = "pointslicer-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+# LAS/LAZ I/O
+las = { workspace = true }
+
+# GeoPackage and spatial operations
+gpkg = { workspace = true }
+rusqlite = { workspace = true }
+geo = { workspace = true }
+geo-types = { workspace = true }
+wkb = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Parallel processing
+rayon = { workspace = true }
+
+# Logging
+log = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

@@ -5,6 +5,8 @@ use std::process::{Command, Output};
 /// Get the path to the compiled pointslicer binary
 pub fn get_binary_path() -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    path.pop(); // Go up from pointslicer-cli
+    path.pop(); // Go up from crates
     path.push("target");
     path.push(if cfg!(debug_assertions) {
         "debug"

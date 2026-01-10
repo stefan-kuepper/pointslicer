@@ -1,6 +1,8 @@
+mod cli;
+
 use clap::Parser;
-use pointslicer::cli::commands::Cli;
-use pointslicer::cli::execute;
+use cli::commands::Cli;
+use cli::execute;
 
 fn main() {
     // Parse command-line arguments

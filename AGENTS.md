@@ -6,6 +6,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **pointslicer** is a Rust CLI tool for extracting points from LAS/LAZ point cloud files using a GeoPackage tile index created by `pdal tindex`. It uses parallel processing (Rayon) to efficiently filter large point cloud datasets based on geometric queries.
 
+## Project Structure
+
+This is a Cargo workspace with two crates:
+
+```
+pointslicer/
+├── Cargo.toml              # Workspace root
+├── crates/
+│   ├── pointslicer-core/   # Library crate with core application logic
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── error.rs
+│   │       ├── geometry/   # Extensible geometry system
+│   │       ├── index/      # GeoPackage tile index reading
+│   │       ├── pipeline/   # Extraction pipeline orchestration
+│   │       └── pointcloud/ # LAS/LAZ I/O
+│   └── pointslicer-cli/    # Binary crate with CLI
+│       ├── src/
+│       │   ├── main.rs
+│       │   └── cli/        # Command-line parsing and execution
+│       └── tests/          # Integration tests
+```
+
 ## Development Commands
 
 ### Build
@@ -35,8 +58,18 @@ cargo clippy
 
 ## Architecture
 
+### Workspace Structure
+
+- **pointslicer-core**: Library crate containing all core functionality
+  - Can be used as a dependency by other Rust projects
+  - Contains geometry, index reading, point cloud I/O, and pipeline logic
+
+- **pointslicer-cli**: Binary crate containing the CLI
+  - Depends on pointslicer-core
+  - Contains command-line parsing and execution logic
+
 ### Trait-Based Geometry System
-The core abstraction is the `ExtractGeometry` trait (`src/geometry/traits.rs`), which defines the interface for any geometry that can extract points:
+The core abstraction is the `ExtractGeometry` trait (`crates/pointslicer-core/src/geometry/traits.rs`), which defines the interface for any geometry that can extract points:
 - `bounding_box()`: Returns 2D bounds for spatial indexing
 - `contains_xy()` / `contains_xyz()`: Point-in-geometry tests
 - `intersects_rect()`: Tile intersection test
@@ -44,10 +77,10 @@ The core abstraction is the `ExtractGeometry` trait (`src/geometry/traits.rs`), 
 All geometry implementations must be `Send + Sync` for parallel processing.
 
 ### Pipeline Flow
-1. **Index Reading** (`src/index/reader.rs`): Opens GeoPackage, queries tiles that intersect with the extraction geometry's bounding box
-2. **Parallel Processing** (`src/pipeline/executor.rs`): Uses Rayon to process tiles in parallel
-3. **Point Filtering** (`src/pointcloud/filter.rs`): Filters points using geometry's `contains_xyz()` method
-4. **Output Writing** (`src/pointcloud/writer.rs`): Writes filtered points to LAS/LAZ, preserving point format from source
+1. **Index Reading** (`crates/pointslicer-core/src/index/reader.rs`): Opens GeoPackage, queries tiles that intersect with the extraction geometry's bounding box
+2. **Parallel Processing** (`crates/pointslicer-core/src/pipeline/executor.rs`): Uses Rayon to process tiles in parallel
+3. **Point Filtering** (`crates/pointslicer-core/src/pointcloud/filter.rs`): Filters points using geometry's `contains_xyz()` method
+4. **Output Writing** (`crates/pointslicer-core/src/pointcloud/writer.rs`): Writes filtered points to LAS/LAZ, preserving point format from source
 
 ### GeoPackage Tile Index Format
 The tool reads GeoPackage tile indices created by `pdal tindex`. Key implementation details:
@@ -56,7 +89,7 @@ The tool reads GeoPackage tile indices created by `pdal tindex`. Key implementat
 - Parses GeoPackage Binary Format header to extract tile envelopes (min_x, max_x, min_y, max_y)
 - Expects a `location` column with the file path to each LAS/LAZ tile
 
-Envelope type handling in `src/index/reader.rs:114-194`:
+Envelope type handling in `crates/pointslicer-core/src/index/reader.rs:114-194`:
 - Type 1: XY (32 bytes)
 - Type 2: XYZ (48 bytes)
 - Type 3: XYM (48 bytes)
@@ -64,7 +97,7 @@ Envelope type handling in `src/index/reader.rs:114-194`:
 - Type 0: No envelope (not yet supported, would require full WKB parsing)
 
 ### Point Format Preservation
-The pipeline preserves the point format from the source tiles when writing output (`src/pipeline/executor.rs:115-125`). It:
+The pipeline preserves the point format from the source tiles when writing output (`crates/pointslicer-core/src/pipeline/executor.rs:115-125`). It:
 1. Opens the first tile to get its header
 2. Uses `las::Builder::from()` to clone the header
 3. Preserves the `point_format` field
@@ -74,23 +107,26 @@ The pipeline preserves the point format from the source tiles when writing outpu
 
 To add a new geometry type (e.g., sphere, frustum, polygon):
 
-1. Create `src/geometry/your_geometry.rs`
+1. Create `crates/pointslicer-core/src/geometry/your_geometry.rs`
 2. Define a struct with geometry parameters
 3. Implement the `ExtractGeometry` trait with all required methods
-4. Add a new variant to `Commands` enum in `src/cli/commands.rs`
-5. Handle the new command in the match statement in `src/cli/mod.rs:21-41`
-6. Export the new geometry from `src/geometry/mod.rs`
+4. Add a new variant to `Commands` enum in `crates/pointslicer-cli/src/cli/commands.rs`
+5. Handle the new command in the match statement in `crates/pointslicer-cli/src/cli/mod.rs:21-41`
+6. Export the new geometry from `crates/pointslicer-core/src/geometry/mod.rs`
 
 **No changes needed** to the pipeline, index reader, or point cloud I/O modules due to the trait-based design.
 
 ## Module Responsibilities
 
-- **cli**: Command-line parsing (clap) and execution orchestration
+### pointslicer-core (library)
+- **error**: Error types using thiserror
 - **geometry**: Extensible geometry system with trait and implementations
 - **index**: GeoPackage tile index reading and spatial filtering
 - **pointcloud**: LAS/LAZ I/O (reader, writer, filtering logic)
 - **pipeline**: Orchestrates the extraction workflow with parallel processing
-- **error**: Error types using thiserror
+
+### pointslicer-cli (binary)
+- **cli**: Command-line parsing (clap) and execution orchestration
 
 ## Key Dependencies
 

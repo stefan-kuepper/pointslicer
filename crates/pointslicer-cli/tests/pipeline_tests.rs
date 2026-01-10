@@ -2,8 +2,8 @@ mod common;
 
 use common::*;
 use geo::coord;
-use pointslicer::geometry::{BoundingBox, VerticalCylinder};
-use pointslicer::pipeline::ExtractionPipeline;
+use pointslicer_core::geometry::{BoundingBox, VerticalCylinder};
+use pointslicer_core::pipeline::ExtractionPipeline;
 
 #[test]
 fn test_pipeline_execute_cylinder() {
