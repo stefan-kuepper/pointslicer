@@ -1,0 +1,30 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "pointslicer"
+description = "Python bindings for pointslicer - extract points from LAS/LAZ files using GeoPackage tile indices"
+readme = "README.md"
+license = { file = "../../LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: System :: Filesystems",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/stefan-kuepper/pointslicer"
+Documentation = "https://docs.rs/pointslicer-core"
+Repository = "https://github.com/stefan-kuepper/pointslicer"
+
+[tool.maturin]
+features = []
+rustc-args = ["-C", "target-cpu=native"]
