@@ -71,10 +71,12 @@ mod tests {
 
         let mut writer = Writer::from_path(path, header)?;
         for i in 0..point_count {
-            let mut point = Point::default();
-            point.x = i as f64;
-            point.y = i as f64;
-            point.z = i as f64;
+            let point = Point {
+                x: i as f64,
+                y: i as f64,
+                z: i as f64,
+                ..Default::default()
+            };
             writer.write(point)?;
         }
         writer.close()?;

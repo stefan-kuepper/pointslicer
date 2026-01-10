@@ -71,7 +71,7 @@ mod tests {
         let path = PathBuf::from("test.laz");
         let bounds = Rect::new(coord! { x: 0.0, y: 0.0 }, coord! { x: 100.0, y: 100.0 });
 
-        let tile = TileInfo::new(path.clone(), bounds.clone());
+        let tile = TileInfo::new(path.clone(), bounds);
 
         assert_eq!(tile.file_path, path);
         assert_eq!(tile.bounds, bounds);
@@ -87,7 +87,7 @@ mod tests {
             srs: Some("EPSG:32632".to_string()),
         };
 
-        let tile = TileInfo::with_metadata(path.clone(), bounds.clone(), metadata.clone());
+        let tile = TileInfo::with_metadata(path.clone(), bounds, metadata.clone());
 
         assert_eq!(tile.file_path, path);
         assert_eq!(tile.bounds, bounds);
