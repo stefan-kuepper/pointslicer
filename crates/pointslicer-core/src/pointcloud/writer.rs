@@ -3,7 +3,30 @@ use las::{Builder, Header, Point, Write};
 use std::io::BufWriter;
 use std::path::Path;
 
-/// Wrapper for writing LAS/LAZ files
+/// Wrapper for writing LAS/LAZ files with format preservation.
+///
+/// This struct provides a convenient interface for writing point cloud data
+/// to LAS or LAZ files, with automatic compression for LAZ files and
+/// preservation of the original point format.
+///
+/// # Examples
+///
+/// ```no_run
+/// use pointslicer_core::pointcloud::{PointCloudReader, PointCloudWriter};
+///
+/// # fn main() -> Result<(), pointslicer_core::TileIndexError> {
+/// // Read points from a source file
+/// let mut reader = PointCloudReader::open("source.laz")?;
+/// let points = reader.points()?;
+///
+/// // Create a new file with the same header (preserves point format)
+/// let mut writer = PointCloudWriter::create("output.laz", reader.header().clone())?;
+///
+/// // Write points
+/// writer.write_points(&points)?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct PointCloudWriter<W: 'static + std::io::Write + std::io::Seek + std::fmt::Debug + Send> {
     writer: las::Writer<W>,
 }

@@ -7,19 +7,51 @@ use rayon::prelude::*;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
-/// Statistics from an extraction operation
+/// Statistics collected during an extraction operation.
+///
+/// This struct contains metrics about the extraction process including
+/// tile counts, point counts, and timing information.
+///
+/// # Fields
+///
+/// - `tiles_processed`: Number of tiles that were successfully processed
+/// - `points_read`: Total number of points read from all tiles
+/// - `points_written`: Number of points that passed the geometry filter
+/// - `elapsed_time`: Total time taken for the extraction
 #[derive(Debug, Clone)]
 pub struct ExtractionStats {
+    /// Number of tiles that were successfully processed.
     pub tiles_processed: usize,
+
+    /// Total number of points read from all tiles.
     pub points_read: u64,
+
+    /// Number of points that passed the geometry filter.
     pub points_written: u64,
+
+    /// Total time taken for the extraction.
     pub elapsed_time: Duration,
 }
 
-/// Pipeline for extracting points from a tile index
+/// Main pipeline for orchestrating point cloud extraction.
+///
+/// This struct manages the entire extraction workflow from reading tile indices
+/// to writing output files. It uses parallel processing with Rayon for
+/// efficient tile processing.
+///
+/// # Fields
+///
+/// - `index_path`: Path to the GeoPackage tile index file
+/// - `output_path`: Path where the extracted points will be written
+/// - `verbose`: Whether to log detailed progress information
 pub struct ExtractionPipeline {
+    /// Path to the GeoPackage tile index file.
     pub index_path: PathBuf,
+
+    /// Path where the extracted points will be written.
     pub output_path: PathBuf,
+
+    /// Whether to log detailed progress information.
     pub verbose: bool,
 }
 

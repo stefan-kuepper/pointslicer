@@ -2,6 +2,13 @@
 name = "pointslicer-core"
 version.workspace = true
 edition.workspace = true
+description = "Extract points from LAS/LAZ files using GeoPackage tile indices"
+repository = "https://github.com/stefan-kuepper/pointslicer"
+keywords = ["gis", "point-cloud", "las", "laz", "geopackage", "spatial", "lidar"]
+categories = ["science::gis", "filesystem", "parsing"]
+readme = "README.md"
+license = "GPL-3.0"
+documentation = "https://docs.rs/pointslicer-core"
 
 [dependencies]
 # LAS/LAZ I/O

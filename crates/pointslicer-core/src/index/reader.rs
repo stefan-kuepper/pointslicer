@@ -5,7 +5,34 @@ use geo::{Rect, coord};
 use rusqlite::Connection;
 use std::path::Path;
 
-/// Reader for GeoPackage tile index files
+/// Reader for GeoPackage tile index files.
+///
+/// This struct provides methods to open GeoPackage files created by `pdal tindex`
+/// and query tiles that intersect with extraction geometries.
+///
+/// # Examples
+///
+/// ```no_run
+/// use pointslicer_core::index::TileIndexReader;
+/// use pointslicer_core::geometry::BoundingBox;
+///
+/// # fn main() -> Result<(), pointslicer_core::TileIndexError> {
+/// // Open a GeoPackage tile index
+/// let reader = TileIndexReader::open("tiles.gpkg")?;
+///
+/// // List all feature tables
+/// let tables = reader.list_tables()?;
+/// println!("Available tables: {:?}", tables);
+///
+/// // Create an extraction geometry
+/// let bbox = BoundingBox::new_2d(10000.0, 20000.0, 30000.0, 40000.0);
+///
+/// // Find intersecting tiles (uses first table if None)
+/// let tiles = reader.read_tiles(None, &bbox)?;
+/// println!("Found {} intersecting tiles", tiles.len());
+/// # Ok(())
+/// # }
+/// ```
 pub struct TileIndexReader {
     conn: Connection,
 }

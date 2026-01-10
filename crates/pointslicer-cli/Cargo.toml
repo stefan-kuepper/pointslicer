@@ -2,6 +2,13 @@
 name = "pointslicer"
 version.workspace = true
 edition.workspace = true
+description = "CLI tool for extracting points from LAS/LAZ files using GeoPackage tile indices"
+repository = "https://github.com/stefan-kuepper/pointslicer"
+keywords = ["gis", "point-cloud", "las", "laz", "geopackage", "spatial", "lidar", "cli"]
+categories = ["science::gis", "filesystem", "parsing", "command-line-utilities"]
+readme = "README.md"
+license = "GPL-3.0"
+documentation = "https://docs.rs/pointslicer"
 
 [[bin]]
 name = "pointslicer"
