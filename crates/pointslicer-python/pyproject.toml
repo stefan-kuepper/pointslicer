@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "pointslicer"
 description = "Python bindings for pointslicer - extract points from LAS/LAZ files using GeoPackage tile indices"
 readme = "README.md"
-license = { file = "../../LICENSE" }
+license = "GPL-3.0"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",

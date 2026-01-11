@@ -7,7 +7,7 @@ repository = "https://github.com/stefan-kuepper/pointslicer"
 keywords = ["gis", "point-cloud", "las", "laz", "geopackage", "spatial", "lidar", "python"]
 categories = ["science::gis", "filesystem", "parsing", "python"]
 readme = "README.md"
-license.workspace = true
+license = "GPL-3.0"
 
 [lib]
 name = "pointslicer"
