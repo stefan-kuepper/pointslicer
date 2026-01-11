@@ -1,4 +1,4 @@
-use pointslicer_core::geometry::{BoundingBox, ExtractGeometry, VerticalCylinder};
+use pointslicer_core::geometry::{BoundingBox, ExtractGeometry, Frustum, VerticalCylinder};
 use pointslicer_core::pipeline::{ExtractionPipeline, ExtractionStats};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -90,9 +90,10 @@ impl PyBoundingBox {
             return Err(PyValueError::new_err("min_y must be less than max_y"));
         }
         if let (Some(min_z_val), Some(max_z_val)) = (min_z, max_z)
-            && min_z_val >= max_z_val {
-                return Err(PyValueError::new_err("min_z must be less than max_z"));
-            }
+            && min_z_val >= max_z_val
+        {
+            return Err(PyValueError::new_err("min_z must be less than max_z"));
+        }
 
         let inner = BoundingBox {
             min_x,
@@ -318,6 +319,123 @@ impl From<PyCylinder> for VerticalCylinder {
     }
 }
 
+/// Python wrapper for a frustum (truncated pyramid) geometry.
+///
+/// A frustum is defined by an origin point, angular bounds (two corner angles),
+/// and distance bounds (near and far planes).
+///
+/// Uses geographic coordinates:
+/// - phi (azimuth): measured clockwise from north (0-360 degrees)
+/// - theta (elevation): measured above/below horizontal (-90 to +90 degrees)
+#[pyclass(name = "Frustum")]
+#[derive(Debug, Clone)]
+pub struct PyFrustum {
+    inner: Frustum,
+}
+
+#[pymethods]
+impl PyFrustum {
+    /// Create a new frustum from origin, corner angles, and distance bounds.
+    ///
+    /// Args:
+    ///     origin_x: X coordinate of the frustum apex
+    ///     origin_y: Y coordinate of the frustum apex
+    ///     origin_z: Z coordinate of the frustum apex
+    ///     phi1: First corner azimuth (degrees, 0-360, clockwise from north)
+    ///     theta1: First corner elevation (degrees, -90 to +90, above horizontal)
+    ///     phi2: Second corner azimuth (degrees, 0-360, clockwise from north)
+    ///     theta2: Second corner elevation (degrees, -90 to +90, above horizontal)
+    ///     min_distance: Near plane distance from origin
+    ///     max_distance: Far plane distance from origin
+    ///
+    /// Returns:
+    ///     Frustum: A new frustum geometry
+    #[new]
+    #[pyo3(signature = (origin_x, origin_y, origin_z, phi1, theta1, phi2, theta2, min_distance, max_distance))]
+    #[allow(clippy::too_many_arguments)]
+    fn new(
+        origin_x: f64,
+        origin_y: f64,
+        origin_z: f64,
+        phi1: f64,
+        theta1: f64,
+        phi2: f64,
+        theta2: f64,
+        min_distance: f64,
+        max_distance: f64,
+    ) -> PyResult<Self> {
+        if min_distance < 0.0 {
+            return Err(PyValueError::new_err("min_distance must be non-negative"));
+        }
+        if max_distance < min_distance {
+            return Err(PyValueError::new_err(
+                "max_distance must be >= min_distance",
+            ));
+        }
+
+        let inner = Frustum::new(
+            origin_x, origin_y, origin_z, phi1, theta1, phi2, theta2, min_distance, max_distance,
+        );
+
+        Ok(Self { inner })
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "Frustum(origin=({}, {}, {}), min_distance={}, max_distance={})",
+            self.inner.origin_x,
+            self.inner.origin_y,
+            self.inner.origin_z,
+            self.inner.min_distance,
+            self.inner.max_distance
+        )
+    }
+
+    /// Check if a 3D point is inside the frustum.
+    ///
+    /// Args:
+    ///     x: X coordinate
+    ///     y: Y coordinate
+    ///     z: Z coordinate
+    ///
+    /// Returns:
+    ///     bool: True if the point is inside the frustum
+    fn contains(&self, x: f64, y: f64, z: f64) -> bool {
+        ExtractGeometry::contains_xyz(&self.inner, x, y, z)
+    }
+
+    #[getter]
+    fn origin_x(&self) -> f64 {
+        self.inner.origin_x
+    }
+
+    #[getter]
+    fn origin_y(&self) -> f64 {
+        self.inner.origin_y
+    }
+
+    #[getter]
+    fn origin_z(&self) -> f64 {
+        self.inner.origin_z
+    }
+
+    #[getter]
+    fn min_distance(&self) -> f64 {
+        self.inner.min_distance
+    }
+
+    #[getter]
+    fn max_distance(&self) -> f64 {
+        self.inner.max_distance
+    }
+}
+
+impl From<PyFrustum> for Frustum {
+    fn from(py_frustum: PyFrustum) -> Self {
+        py_frustum.inner
+    }
+}
+
 /// Extract points from LAS/LAZ files using a GeoPackage tile index.
 ///
 /// Args:
@@ -370,10 +488,19 @@ fn extract(
             Err(e) => Err(PyValueError::new_err(format!("Extraction failed: {}", e))),
         }
     }
+    // Check if it's a Frustum
+    else if let Ok(py_frustum) = geometry.extract::<PyFrustum>() {
+        let frustum: Frustum = py_frustum.into();
+        let pipeline = ExtractionPipeline::new(&index_path, &output_path, verbose);
+        match pipeline.execute(&frustum) {
+            Ok(stats) => Ok(stats.into()),
+            Err(e) => Err(PyValueError::new_err(format!("Extraction failed: {}", e))),
+        }
+    }
     // Unknown geometry type
     else {
         Err(PyValueError::new_err(
-            "geometry must be either BoundingBox or Cylinder",
+            "geometry must be BoundingBox, Cylinder, or Frustum",
         ))
     }
 }
@@ -388,6 +515,7 @@ fn pointslicer(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyExtractionStats>()?;
     m.add_class::<PyBoundingBox>()?;
     m.add_class::<PyCylinder>()?;
+    m.add_class::<PyFrustum>()?;
     m.add_function(wrap_pyfunction!(extract, m)?)?;
 
     // Add module documentation

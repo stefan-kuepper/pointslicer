@@ -69,4 +69,43 @@ pub enum Commands {
         #[arg(long)]
         max_z: Option<f64>,
     },
+
+    /// Extract points within a frustum (truncated pyramid field-of-view)
+    Frustum {
+        /// Origin X coordinate (apex)
+        #[arg(long)]
+        origin_x: f64,
+
+        /// Origin Y coordinate (apex)
+        #[arg(long)]
+        origin_y: f64,
+
+        /// Origin Z coordinate (apex)
+        #[arg(long)]
+        origin_z: f64,
+
+        /// First corner azimuth angle (degrees, 0-360, clockwise from north)
+        #[arg(long)]
+        phi1: f64,
+
+        /// First corner elevation angle (degrees, -90 to +90, above horizontal)
+        #[arg(long)]
+        theta1: f64,
+
+        /// Second corner azimuth angle (degrees, 0-360, clockwise from north)
+        #[arg(long)]
+        phi2: f64,
+
+        /// Second corner elevation angle (degrees, -90 to +90, above horizontal)
+        #[arg(long)]
+        theta2: f64,
+
+        /// Minimum distance from origin (near plane)
+        #[arg(long)]
+        min_distance: f64,
+
+        /// Maximum distance from origin (far plane)
+        #[arg(long)]
+        max_distance: f64,
+    },
 }

@@ -2,7 +2,7 @@ pub mod commands;
 
 use commands::{Cli, Commands};
 use pointslicer_core::Result;
-use pointslicer_core::geometry::{BoundingBox, VerticalCylinder};
+use pointslicer_core::geometry::{BoundingBox, Frustum, VerticalCylinder};
 use pointslicer_core::pipeline::ExtractionPipeline;
 
 /// Execute the CLI command
@@ -36,6 +36,30 @@ pub fn execute(cli: Cli) -> Result<()> {
             } else {
                 BoundingBox::new_2d(min_x, max_x, min_y, max_y)
             };
+            pipeline.execute(&geometry)?
+        }
+        Commands::Frustum {
+            origin_x,
+            origin_y,
+            origin_z,
+            phi1,
+            theta1,
+            phi2,
+            theta2,
+            min_distance,
+            max_distance,
+        } => {
+            let geometry = Frustum::new(
+                origin_x,
+                origin_y,
+                origin_z,
+                phi1,
+                theta1,
+                phi2,
+                theta2,
+                min_distance,
+                max_distance,
+            );
             pipeline.execute(&geometry)?
         }
     };

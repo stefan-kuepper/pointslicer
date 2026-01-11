@@ -9,6 +9,7 @@
 //!
 //! - [`BoundingBox`]: A 2D or 3D axis-aligned bounding box
 //! - [`VerticalCylinder`]: A vertical cylinder defined by center coordinates and radius
+//! - [`Frustum`]: A truncated pyramid defined by origin, angular bounds, and distance bounds
 //!
 //! ## Adding Custom Geometries
 //!
@@ -69,6 +70,7 @@
 
 pub mod bbox;
 pub mod cylinder;
+pub mod frustum;
 pub mod traits;
 
 /// A 2D or 3D axis-aligned bounding box for point extraction.
@@ -99,6 +101,22 @@ pub use bbox::BoundingBox;
 /// - `center_y`: Y coordinate of the cylinder center
 /// - `radius`: Radius of the cylinder
 pub use cylinder::VerticalCylinder;
+
+/// A frustum (truncated pyramid) defined by origin, angular bounds, and distance bounds.
+///
+/// This struct represents a field-of-view cone that can be used to extract points
+/// within a specific angular region from a given origin point.
+///
+/// Uses geographic coordinates:
+/// - phi (azimuth): measured clockwise from north (0-360 degrees)
+/// - theta (elevation): measured above/below horizontal (-90 to +90 degrees)
+///
+/// # Fields
+///
+/// - `origin_x`, `origin_y`, `origin_z`: The apex/origin point
+/// - `min_distance`: Near plane distance from origin
+/// - `max_distance`: Far plane distance from origin
+pub use frustum::Frustum;
 
 /// The core trait for extraction geometries.
 ///
