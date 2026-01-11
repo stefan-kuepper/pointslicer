@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 
-This is a Cargo workspace with two crates:
+This is a Cargo workspace with three crates:
 
 ```
 pointslicer/
@@ -22,11 +22,17 @@ pointslicer/
 │   │       ├── index/      # GeoPackage tile index reading
 │   │       ├── pipeline/   # Extraction pipeline orchestration
 │   │       └── pointcloud/ # LAS/LAZ I/O
-│   └── pointslicer-cli/    # Binary crate with CLI
+│   ├── pointslicer-cli/    # Binary crate with CLI
+│   │   ├── src/
+│   │   │   ├── main.rs
+│   │   │   └── cli/        # Command-line parsing and execution
+│   │   └── tests/          # Integration tests
+│   └── pointslicer-python/ # Python bindings crate
 │       ├── src/
-│       │   ├── main.rs
-│       │   └── cli/        # Command-line parsing and execution
-│       └── tests/          # Integration tests
+│       │   └── lib.rs      # PyO3 bindings
+│       ├── pyproject.toml  # Python packaging
+│       ├── README.md       # Python documentation
+│       └── example.py      # Python usage example
 ```
 
 ## Development Commands
@@ -56,6 +62,32 @@ cargo clippy
 ./target/release/pointslicer -v --index tiles.gpkg --output extracted.laz bbox --min-x 10000 --max-x 20000 --min-y 30000 --max-y 40000
 ```
 
+### Python Usage
+```python
+import pointslicer
+
+# Create geometries
+bbox = pointslicer.BoundingBox(10000, 20000, 30000, 40000)
+cylinder = pointslicer.Cylinder(12345, 67890, 6.0)
+
+# Extract points
+stats = pointslicer.extract(
+    index_path="tiles.gpkg",
+    output_path="output.laz",
+    geometry=bbox,
+    verbose=True
+)
+
+print(f"Extracted {stats.points_written} points")
+```
+
+Build Python module:
+```bash
+cd crates/pointslicer-python
+maturin develop  # For development
+maturin build    # For distribution
+```
+
 ## Architecture
 
 ### Workspace Structure
@@ -67,6 +99,11 @@ cargo clippy
 - **pointslicer-cli**: Binary crate containing the CLI
   - Depends on pointslicer-core
   - Contains command-line parsing and execution logic
+
+- **pointslicer-python**: Python bindings crate using PyO3
+  - Depends on pointslicer-core
+  - Provides Python bindings for the core functionality
+  - Built with maturin for Python packaging
 
 ### Trait-Based Geometry System
 The core abstraction is the `ExtractGeometry` trait (`crates/pointslicer-core/src/geometry/traits.rs`), which defines the interface for any geometry that can extract points:
@@ -137,3 +174,4 @@ To add a new geometry type (e.g., sphere, frustum, polygon):
 - **clap** (v4): CLI with derive macros
 - **gpkg** (v0.1): GeoPackage utilities
 - **wkb** (v0.7): Well-Known Binary format support
+- **pyo3** (v0.27): Python bindings for Rust (for pointslicer-python crate)

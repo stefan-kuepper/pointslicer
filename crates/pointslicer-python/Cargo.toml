@@ -1,0 +1,21 @@
+[package]
+name = "pointslicer-python"
+version.workspace = true
+edition.workspace = true
+description = "Python bindings for pointslicer - extract points from LAS/LAZ files using GeoPackage tile indices"
+repository = "https://github.com/stefan-kuepper/pointslicer"
+keywords = ["gis", "point-cloud", "las", "laz", "geopackage", "spatial", "lidar", "python"]
+categories = ["science::gis", "filesystem", "parsing", "python"]
+readme = "README.md"
+license = "GPL-3.0"
+
+[lib]
+name = "pointslicer"
+crate-type = ["cdylib"]
+
+[dependencies]
+pointslicer-core = { path = "../pointslicer-core" }
+pyo3 = { workspace = true }
+
+[build-dependencies]
+pyo3-build-config = "0.27"
