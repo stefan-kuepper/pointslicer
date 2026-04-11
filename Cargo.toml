@@ -3,7 +3,7 @@ members = ["crates/pointslicer-core", "crates/pointslicer-cli", "crates/pointsli
 resolver = "2"
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 license = "GPL-3.0"
 
@@ -37,4 +37,4 @@ assert_cmd = "2.0"
 tempfile = "3.8"
 
 # Python bindings
-pyo3 = { version = "0.27", features = ["extension-module"] }
+pyo3 = { version = "0.27", features = ["extension-module", "experimental-inspect"] }
