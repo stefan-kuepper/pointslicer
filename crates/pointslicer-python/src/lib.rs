@@ -374,7 +374,15 @@ impl PyFrustum {
         }
 
         let inner = Frustum::new(
-            origin_x, origin_y, origin_z, phi1, theta1, phi2, theta2, min_distance, max_distance,
+            origin_x,
+            origin_y,
+            origin_z,
+            phi1,
+            theta1,
+            phi2,
+            theta2,
+            min_distance,
+            max_distance,
         );
 
         Ok(Self { inner })

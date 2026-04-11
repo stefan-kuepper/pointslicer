@@ -1,5 +1,5 @@
 use super::traits::ExtractGeometry;
-use geo::{coord, Rect};
+use geo::{Rect, coord};
 
 /// A frustum (truncated pyramid) defined by origin, angular bounds, and distance bounds.
 ///
@@ -269,9 +269,9 @@ impl Frustum {
         // Also sample cardinal directions if they fall within the frustum
         // This catches cases where the extremes are along axes
         let cardinal_phis = [
-            0.0,                              // North
-            std::f64::consts::FRAC_PI_2,      // East
-            std::f64::consts::PI,             // South
+            0.0,                               // North
+            std::f64::consts::FRAC_PI_2,       // East
+            std::f64::consts::PI,              // South
             3.0 * std::f64::consts::FRAC_PI_2, // West
         ];
 
@@ -642,7 +642,7 @@ mod tests {
         assert!(theta.abs() < EPSILON);
 
         // Point directly up at distance 100
-        let (dist, phi, theta) = Frustum::cartesian_to_spherical(0.0, 0.0, 100.0);
+        let (dist, _phi, theta) = Frustum::cartesian_to_spherical(0.0, 0.0, 100.0);
         assert!((dist - 100.0).abs() < EPSILON);
         assert!((theta - FRAC_PI_2).abs() < EPSILON); // theta should be 90 degrees
     }
